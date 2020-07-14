@@ -98,7 +98,7 @@ class constrained_linear_model:
         self.X=X
         m=len(X)
         
-        #CLEANING UNOBSERVED FEATURES TO AVOID COLLINEARITY
+        #Cleaning unobserved features to avoid collinearity
         cols=X.columns
         cols_f=X[X>0].dropna(axis=1,how='all').columns   
         drop_cols=[c for c in cols if c not in cols_f]
@@ -107,7 +107,7 @@ class constrained_linear_model:
         X=X[cols_f]
         n=len(X.columns)
         
-        #STANDARDISATION OF THE FEATURES
+        #Standardisation of the features
         if scaled ==True:
             scaler = StandardScaler()
             X = pd.DataFrame(scaler.fit_transform(X))
@@ -115,7 +115,7 @@ class constrained_linear_model:
             scaler=None
         self.scaler=scaler
 
-        #INITIALISATION OD THE WEIGHTS
+        #Initialization of the weights
         np.random.seed(1)
         b=np.random.randn(1)/100
         if init=="rand":
@@ -124,26 +124,26 @@ class constrained_linear_model:
              theta0=np.zeros(n)
         theta=theta0  
         
-        #LOSS FUNCTION
+        #Loss function
         COST_liste=[]
         COST1_liste=[]
         COST2_liste=[]
 
-        #FITTING INTERCEPT
+        #Fitting intercept
         if fit_intercept==True:
             z=1
         else:
             z=0
 
-        #BATCH GRADIENT DESCENT WITH THE PENALTY FUNCTION
+        #Batch gradient descent with a penalty function
         for i in range(num_iteration):
 
-            #COMPUTE ERROR            
+            #Compute error          
             ypred=(X.dot(theta)).tolist()+b*z
             self.ypred=ypred
             Error=ypred-y.to_numpy()
             
-            #BUILD THE CONSTRAINTS ON ORIGINAL WEIGHTS WITH THE CLASS CONSTRAINT
+            #Build the constraints on the original weights
             theta_conv=convert_theta(theta,self.scaler)
             
             contraintes1=constraint(theta_conv,cst_dict1,1,method,n)
@@ -160,7 +160,7 @@ class constrained_linear_model:
             mat22=contraintes2.cst_mat2
             taux2=((mat02<0).sum())/len(cst_dict2)*100
             
-            #COMPUTE THE LOSS FUNCTION
+            #Compute the loss function
             COST1=1/(2*m)*((Error)**2).sum()+reg/2*(theta**2).sum()            
             COST2=(k*mat11+k*mat12).sum()
             COST=COST1+COST2
@@ -173,7 +173,7 @@ class constrained_linear_model:
             self.COST2_liste=COST2_liste
             self.COST_liste=COST_liste
             
-            #CALLBACK
+            #Training logs
             if verbose==True and i%10==0:
                 print("Epoch "+str(i),"\n",
                       "COST:",round(COST,8),round(COST1,8),round(COST2,8),"\n",
@@ -181,7 +181,7 @@ class constrained_linear_model:
                       "TauxCSS1",round(taux1,5),"%","\n",
                       "TauxCSS2",round(taux2,5),"%","\n")
 
-            #UPDATE THE WEIGHTS AFTER COMPUTING THE PARTIAL DERIVATIVES
+            #Update the weights after computing the partial derivatives
             K0=-alpha/m*np.array(Error.dot(X))
             K1=-alpha*(k*mat21+k*mat22)
             K2=-alpha*reg*theta.T.flatten()
@@ -189,11 +189,11 @@ class constrained_linear_model:
             theta=theta+K0+K1+K2
             b=b-alpha/m*Error.sum()
 
-        #RETURN THE ORIGINAL WEIGHTS AND NULL VALUES FOR THE UNOBSERVED FEATURES
+        #Return the original weights
         self.coef=convert_theta(theta,self.scaler)
         self.coef_full=self._fill_coef()
 
-    #NON PUBLIC METHOD TO COMPUTE FINAL WEIGHT LIST
+    #Compute final weights list
     def _fill_coef(self):
         cols=self.cols
         drop_cols=self.drop_cols
@@ -207,7 +207,8 @@ class constrained_linear_model:
                 coef_full.append(coef[i]) 
                 i+=1
         return coef_full
-            
+    
+    #Display the loss with regards to each iteration
     def plot_cost(self,roll):
         COST1_liste=self.COST1_liste
         COST2_liste=self.COST2_liste
@@ -220,7 +221,6 @@ class constrained_linear_model:
         ypred=self.ypred
         plt.scatter(y,ypred)
 
-        
 class constraint:
     """
     A class that build constraints array both for penalty function
