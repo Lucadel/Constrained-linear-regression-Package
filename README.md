@@ -1,5 +1,7 @@
 # Constrained-linear-regression-Package
- A linear regression model that allows to set linear constraints
--Constraints on Theta1 & Theta2 parameters: CSTR1=Theta1-p1*Theta2>0     
--Bounds on a parameter Theta: CSTR2=p2*(Theta-bound)>0 where p2=1 or p2=-1 depending on the inequality     
-These constraints are implemented by adding to the loss function a convex penalty function of that type: P=Sum(f(-CSTR)), where f can be a Relu, Squared Relu or an Exponential function.
+This is a linear regression model that allows to enforce linear constraints and bounds on the weights.
+Given Theta1 & Theta2 weight, a linear constraint can be defined as Theta1>p1*Theta2 where p1 is a scalar.
+Moreover, each weight of the model can be limited to specified bounds by complying with the following criteria: Theta-bound>0 
+The Mean Squared Error of the model is optimized with Gradient Descent.
+These constraints are implemented by adding to the loss function a convex penalty term P:
+  P=Sum(f(-CSTR)), where f can be a Relu, Squared Relu or an Exponential function.
