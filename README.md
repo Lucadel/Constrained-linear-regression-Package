@@ -6,4 +6,4 @@ Moreover, each weight of the model can be limited to specified bounds by complyi
 
 The Mean Squared Error of the model is optimized with Gradient Descent.
 These constraints are implemented by adding to the loss function a convex penalty term P:
-  P=Sum(f(-CSTR)), where f can be a Relu, Squared Relu or an Exponential function.
+  P=Sum(f(-Constraint)), where f can be a Relu, Squared Relu or an Exponential function.
